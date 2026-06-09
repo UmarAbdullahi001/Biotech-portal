@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FUD Biotechnology (BTG) 200L | Student Portal</title>
+    <title>FUD BTG 200L | All-in-One Portal</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:'Segoe UI',sans-serif;background:linear-gradient(135deg,#1a5f3a,#0d3b23);min-height:100vh;}
@@ -12,18 +13,17 @@
         .logo h1{color:#1a5f3a;font-size:1.3rem;}
         .user-badge{background:#1a5f3a;color:white;padding:0.5rem 1rem;border-radius:30px;}
         .logout-btn{background:#e74c3c;color:white;padding:0.5rem 1rem;border-radius:8px;border:none;cursor:pointer;}
-        .nav{background:white;padding:1rem;display:flex;justify-content:center;gap:0.8rem;flex-wrap:wrap;}
-        .nav-btn{background:#1a5f3a;color:white;border:none;padding:0.6rem 1.2rem;border-radius:30px;cursor:pointer;font-weight:bold;}
-        .nav-btn:hover{background:#0d3b23;}
+        .nav{background:white;padding:1rem;display:flex;justify-content:center;gap:0.8rem;flex-wrap:wrap;max-height:80px;overflow-y:auto;}
+        .nav-btn{background:#1a5f3a;color:white;border:none;padding:0.6rem 1rem;border-radius:30px;cursor:pointer;font-weight:bold;font-size:0.8rem;}
         .container{max-width:1300px;margin:2rem auto;padding:0 1.5rem;}
         .page{display:none;animation:fadeIn 0.3s;}
         .page.active{display:block;}
         @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-        .card{background:white;border-radius:20px;padding:1.8rem;margin-bottom:1.8rem;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
-        .card h2{color:#1a5f3a;border-left:5px solid #1a5f3a;padding-left:1rem;margin-bottom:1.2rem;}
-        input,textarea,select{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin:5px 0;}
-        .btn{background:#1a5f3a;color:white;border:none;padding:12px;border-radius:30px;cursor:pointer;width:100%;font-weight:bold;}
-        .btn-small{background:#1a5f3a;color:white;padding:5px 10px;border-radius:5px;border:none;cursor:pointer;}
+        .card{background:white;border-radius:20px;padding:1.5rem;margin-bottom:1.5rem;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+        .card h2{color:#1a5f3a;border-left:5px solid #1a5f3a;padding-left:1rem;margin-bottom:1rem;}
+        input,textarea,select{width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin:5px 0;}
+        .btn{background:#1a5f3a;color:white;border:none;padding:10px;border-radius:30px;cursor:pointer;width:100%;font-weight:bold;}
+        .btn-small{background:#1a5f3a;color:white;padding:5px 10px;border-radius:5px;border:none;cursor:pointer;margin:2px;}
         .auth-container{max-width:500px;margin:3rem auto;}
         .auth-tabs{display:flex;gap:1rem;margin-bottom:1.5rem;}
         .auth-tab{flex:1;padding:1rem;background:#f0f0f0;border:none;border-radius:10px;cursor:pointer;}
@@ -31,126 +31,145 @@
         .auth-form{display:none;}
         .auth-form.active{display:block;}
         table{width:100%;border-collapse:collapse;}
-        th,td{padding:12px;text-align:left;border-bottom:1px solid #ddd;}
+        th,td{padding:10px;text-align:left;border-bottom:1px solid #ddd;}
         th{background:#1a5f3a;color:white;}
-        .assignment-item{background:#f9f9f9;padding:1rem;margin-bottom:1rem;border-radius:10px;border-left:4px solid #1a5f3a;}
-        .announcement-item{background:#fff3e0;padding:1rem;margin-bottom:1rem;border-radius:10px;border-left:4px solid #e67e22;}
-        .quiz-question{background:#f0f7f3;padding:1rem;margin-bottom:1rem;border-radius:10px;}
-        .alert{padding:12px;border-radius:8px;margin-top:1rem;display:none;}
+        .assignment-item,.chat-message,.video-item,.pastq-item,.group-item{background:#f9f9f9;padding:0.8rem;margin-bottom:0.8rem;border-radius:10px;border-left:4px solid #1a5f3a;}
+        .chat-message .name{font-weight:bold;color:#1a5f3a;}
+        .alert{padding:10px;border-radius:8px;margin-top:1rem;display:none;}
         .alert.success{background:#d4edda;color:#155724;display:block;}
-        .alert.error{background:#f8d7da;color:#721c24;display:block;}
-        .grade-badge{background:#1a5f3a;color:white;padding:0.3rem 0.8rem;border-radius:20px;display:inline-block;}
-        .grade-input{width:70px;padding:5px;}
-        .average-score{background:#1a5f3a;color:white;padding:0.5rem;border-radius:10px;text-align:center;margin-top:1rem;}
-        .file-input{padding:10px;background:#f0f0f0;border-radius:8px;}
+        .grade-badge{background:#1a5f3a;color:white;padding:0.2rem 0.6rem;border-radius:20px;display:inline-block;}
+        .avatar{width:50px;height:50px;border-radius:50%;object-fit:cover;background:#ddd;}
+        canvas{max-height:300px;}
         .footer{text-align:center;padding:2rem;color:white;}
-        .export-btn{background:#27ae60;margin-top:10px;}
-        @media(max-width:768px){th,td{font-size:0.7rem;padding:6px;}}
+        @media(max-width:768px){th,td{font-size:0.7rem;padding:5px;}}
     </style>
 </head>
 <body>
 <div id="app">
     <div class="header" id="header" style="display:none;">
-        <div class="header-content">
-            <div class="logo"><h1>🧬 FUD BIOTECHNOLOGY (BTG) 200L</h1><p>Federal University Dutse</p></div>
-            <div class="user-info"><span class="user-badge" id="userNameDisplay"></span><button class="logout-btn" onclick="logout()">🚪 Logout</button></div>
-        </div>
+        <div class="header-content"><div class="logo"><h1>🧬 FUD BTG 200L</h1><p>Federal University Dutse</p></div>
+        <div class="user-info"><span class="user-badge" id="userNameDisplay"></span><button class="logout-btn" onclick="logout()">🚪 Logout</button></div></div>
     </div>
     <div class="nav" id="nav" style="display:none;">
-        <button class="nav-btn" onclick="showPage('announcements')">📢 Announcements</button>
+        <button class="nav-btn" onclick="showPage('announcements')">📢 Announce</button>
+        <button class="nav-btn" onclick="showPage('chat')">💬 Chat</button>
         <button class="nav-btn" onclick="showPage('students')">👥 Students</button>
-        <button class="nav-btn" onclick="showPage('assignments')">📝 Assignments</button>
-        <button class="nav-btn" onclick="showPage('quiz')">📊 Quiz</button>
-        <button class="nav-btn" onclick="showPage('reports')">📄 Reports</button>
-        <button class="nav-btn" onclick="showPage('research')">🔬 Research</button>
+        <button class="nav-btn" onclick="showPage('assignments')">📝 Assign</button>
+        <button class="nav-btn" onclick="showPage('attendance')">📅 Attendance</button>
+        <button class="nav-btn" onclick="showPage('videos')">📹 Videos</button>
+        <button class="nav-btn" onclick="showPage('pastq')">📚 Past Q</button>
+        <button class="nav-btn" onclick="showPage('groups')">👥 Groups</button>
+        <button class="nav-btn" onclick="showPage('profile')">👤 Profile</button>
+        <button class="nav-btn" onclick="showPage('certificate')">🎓 Certificate</button>
+        <button class="nav-btn" onclick="showPage('analytics')">📊 Analytics</button>
         <button class="nav-btn" id="lecturerBtn" style="display:none;" onclick="showPage('admin')">👨‍🏫 Admin</button>
     </div>
     <div class="container">
         <!-- AUTH -->
         <div id="authPage" class="auth-container"><div class="card"><div class="auth-tabs"><button class="auth-tab active" onclick="switchAuthTab('login')">🔐 Login</button><button class="auth-tab" onclick="switchAuthTab('register')">📝 Register</button></div>
-        <div id="loginForm" class="auth-form active"><form onsubmit="login(event)"><div class="form-group"><label>📧 Email or Matric</label><input type="text" id="loginEmail" placeholder="e.g., FUD/BTG/20/001" required></div><div class="form-group"><label>🔒 Password</label><input type="password" id="loginPassword" required></div><button type="submit" class="btn">Login</button></form><div id="loginAlert" class="alert"></div></div>
-        <div id="registerForm" class="auth-form"><form onsubmit="register(event)"><div class="form-group"><label>👤 Full Name</label><input type="text" id="regName" required></div><div class="form-group"><label>🎓 Matric Number (format: FUD/BTG/20/XXX)</label><input type="text" id="regMatric" placeholder="FUD/BTG/20/001" required></div><div class="form-group"><label>📧 Email</label><input type="email" id="regEmail" required></div><div class="form-group"><label>📞 Phone</label><input type="tel" id="regPhone" required></div><div class="form-group"><label>🔒 Password</label><input type="password" id="regPassword" required></div><div class="form-group"><label>🔒 Confirm</label><input type="password" id="regConfirmPassword" required></div><button type="submit" class="btn">Create Account</button></form><div id="registerAlert" class="alert"></div></div></div></div>
+        <div id="loginForm" class="auth-form active"><form onsubmit="login(event)"><input type="text" id="loginEmail" placeholder="Email or Matric" required><input type="password" id="loginPassword" placeholder="Password" required><button type="submit" class="btn">Login</button></form><div id="loginAlert" class="alert"></div></div>
+        <div id="registerForm" class="auth-form"><form onsubmit="register(event)"><input type="text" id="regName" placeholder="Full Name" required><input type="text" id="regMatric" placeholder="FUD/BTG/20/XXX" required><input type="email" id="regEmail" placeholder="Email" required><input type="tel" id="regPhone" placeholder="Phone" required><input type="password" id="regPassword" placeholder="Password" required><input type="password" id="regConfirmPassword" placeholder="Confirm" required><button type="submit" class="btn">Create Account</button></form><div id="registerAlert" class="alert"></div></div></div></div>
 
-        <!-- ANNOUNCEMENTS -->
-        <div id="announcements" class="page"><div class="card"><h2>📢 Latest Announcements</h2><div id="announcementsList"></div></div></div>
+        <!-- Announcements -->
+        <div id="announcements" class="page"><div class="card"><h2>📢 Announcements</h2><div id="announcementsList"></div></div></div>
 
-        <!-- STUDENTS (only registered students) -->
-        <div id="students" class="page"><div class="card"><h2>👥 Registered BTG 200L Students</h2><div class="table-container"><table><thead><tr><th>S/N</th><th>Name</th><th>Matric</th><th>Email</th><th>Phone</th></thead><tbody id="studentList"></tbody></table></div></div></div>
+        <!-- Chat Forum -->
+        <div id="chat" class="page"><div class="card"><h2>💬 Discussion Forum</h2><div id="chatMessages" style="max-height:400px; overflow-y:auto; margin-bottom:1rem;"></div><input type="text" id="chatMsg" placeholder="Type your message..."><button class="btn" onclick="sendChatMessage()">Send</button></div></div>
 
-        <!-- ASSIGNMENTS -->
-        <div id="assignments" class="page"><div class="card"><h2>📝 Current Assignments</h2><div id="assignmentsList"></div></div><div class="card"><h2>📎 Submit Assignment</h2><form id="assignmentForm"><select id="assignSelect" required><option value="">-- Select Assignment --</option><option>Gene Cloning Techniques (Due: 20th June)</option><option>PCR Applications (Due: 25th June)</option><option>CRISPR Case Study (Due: 30th June)</option></select><textarea id="assignAnswer" rows="4" placeholder="Write your answer here..."></textarea><div class="file-input"><label>📂 Or upload file:</label><input type="file" id="assignFile" accept=".pdf,.doc,.docx,.txt,.jpg,.png"></div><button type="submit" class="btn">Submit Assignment</button></form><div id="assignAlert" class="alert"></div></div><div class="card"><h2>📊 My Grades & Submissions</h2><div id="mySubmissions"></div><div id="studentAverage" class="average-score"></div></div></div>
+        <!-- Students -->
+        <div id="students" class="page"><div class="card"><h2>👥 Registered Students</h2><div id="studentList"></div></div></div>
 
-        <!-- QUIZ -->
-        <div id="quiz" class="page"><div class="card"><h2>📊 Biotechnology Quiz</h2><form id="quizForm"><div class="quiz-question"><p><strong>1. What does PCR stand for?</strong></p><label><input type="radio" name="q1" value="A"> A) Polymerase Chain Reaction</label><br><label><input type="radio" name="q1" value="B"> B) Protein Coding Region</label><br><label><input type="radio" name="q1" value="C"> C) Polymerase Creating RNA</label></div><div class="quiz-question"><p><strong>2. Which enzyme cuts DNA?</strong></p><label><input type="radio" name="q2" value="A"> A) DNA Ligase</label><br><label><input type="radio" name="q2" value="B"> B) Restriction Enzyme</label><br><label><input type="radio" name="q2" value="C"> C) RNA Polymerase</label></div><div class="quiz-question"><p><strong>3. CRISPR-Cas9 is used for?</strong></p><label><input type="radio" name="q3" value="A"> A) Protein synthesis</label><br><label><input type="radio" name="q3" value="B"> B) Gene editing</label><br><label><input type="radio" name="q3" value="C"> C) Cell division</label></div><button type="submit" class="btn">Submit Quiz</button></form><div id="quizResult"></div></div><div class="card"><h2>📊 My Quiz History</h2><div id="quizHistory"></div></div></div>
+        <!-- Assignments -->
+        <div id="assignments" class="page"><div class="card"><h2>📝 Assignments</h2><div id="assignmentsList"></div><h3>Submit</h3><select id="assignSelect"><option>Gene Cloning</option><option>PCR Applications</option><option>CRISPR Case Study</option></select><textarea id="assignAnswer" rows="3"></textarea><input type="file" id="assignFile"><button class="btn" onclick="submitAssignment()">Submit</button><div id="assignAlert"></div><h3>My Submissions</h3><div id="mySubmissions"></div></div></div>
 
-        <!-- REPORTS -->
-        <div id="reports" class="page"><div class="card"><h2>📄 Submit Lab Report</h2><form id="reportForm"><input type="text" id="reportTitle" placeholder="Report Title" required><textarea id="reportContent" rows="6" placeholder="Write your report here..."></textarea><div class="file-input"><label>📂 Or upload file:</label><input type="file" id="reportFile" accept=".pdf,.doc,.docx,.txt,.jpg,.png"></div><button type="submit" class="btn">Submit Report</button></form><div id="reportAlert" class="alert"></div></div><div class="card"><h2>📂 My Reports & Grades</h2><div id="myReports"></div></div></div>
+        <!-- Attendance -->
+        <div id="attendance" class="page"><div class="card"><h2>📅 Attendance</h2><div id="attendanceView"></div></div></div>
 
-        <!-- RESEARCH -->
-        <div id="research" class="page"><div class="card"><h2>🔬 Research Resources</h2><div class="assignment-item"><strong>📖 Open Access Journals:</strong><br><a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank">PubMed Central</a></div><div class="assignment-item"><strong>🧪 Lab Protocols:</strong><br><a href="https://www.addgene.org/" target="_blank">Addgene Guide</a></div><div class="assignment-item"><strong>📚 Research Topics:</strong><ul><li>Antibiotic resistance gene detection using PCR</li><li>Plant tissue culture for crop improvement</li><li>Bioinformatics analysis</li><li>CRISPR-Cas9 applications</li></ul></div></div></div>
+        <!-- Video Lectures -->
+        <div id="videos" class="page"><div class="card"><h2>📹 Video Lectures</h2><div id="videosList"></div></div></div>
 
-        <!-- ADMIN PANEL -->
-        <div id="admin" class="page">
-            <div class="card"><h2>📢 Post Announcement</h2><input type="text" id="announceTitle" placeholder="Title"><textarea id="announceMsg" rows="3" placeholder="Announcement message..."></textarea><button class="btn" onclick="postAnnouncement()">Post Announcement</button></div>
-            <div class="card"><h2>👨‍🏫 Grade Assignments</h2><div id="gradeAssignmentsList"></div></div>
-            <div class="card"><h2>👨‍🏫 Grade Lab Reports</h2><div id="gradeReportsList"></div></div>
-            <div class="card"><h2>📊 Summary & Export</h2><div id="allSubmissionsSummary"></div><button class="btn export-btn" onclick="exportToExcel()">📎 Export All Grades to Excel</button></div>
-            <div class="card"><h2>➕ Add New Student (Lecturer only)</h2><input type="text" id="newStudentName" placeholder="Full Name"><input type="text" id="newStudentMatric" placeholder="Matric (FUD/BTG/20/XXX)"><input type="email" id="newStudentEmail" placeholder="Email"><input type="tel" id="newStudentPhone" placeholder="Phone"><button class="btn" onclick="addStudentByLecturer()">Add Student</button><div id="addStudentAlert" class="alert"></div></div>
-        </div>
+        <!-- Past Questions -->
+        <div id="pastq" class="page"><div class="card"><h2>📚 Past Questions Bank</h2><div id="pastqList"></div></div></div>
+
+        <!-- Group Projects -->
+        <div id="groups" class="page"><div class="card"><h2>👥 Group Projects</h2><div id="groupsList"></div><h3>Create Group</h3><input type="text" id="groupName" placeholder="Group Name"><button class="btn" onclick="createGroup()">Create</button><h3>Join Group</h3><input type="text" id="joinGroupId" placeholder="Group ID"><button class="btn" onclick="joinGroup()">Join</button><h3>Submit Group Assignment</h3><select id="groupSelect"></select><textarea id="groupAnswer" rows="3"></textarea><button class="btn" onclick="submitGroupWork()">Submit</button></div></div>
+
+        <!-- Profile -->
+        <div id="profile" class="page"><div class="card"><h2>👤 My Profile</h2><img id="avatarImg" class="avatar" src=""><input type="file" id="avatarUpload" accept="image/*"><input type="text" id="profileName" placeholder="Full Name"><input type="tel" id="profilePhone" placeholder="Phone"><button class="btn" onclick="updateProfile()">Update Profile</button><div id="profileAlert"></div></div></div>
+
+        <!-- Certificate -->
+        <div id="certificate" class="page"><div class="card"><h2>🎓 Certificate of Completion</h2><div id="certificateStatus"></div><button class="btn" onclick="generateCertificate()">Download Certificate</button></div></div>
+
+        <!-- Analytics -->
+        <div id="analytics" class="page"><div class="card"><h2>📊 Analytics</h2><canvas id="scoreChart" width="400" height="200"></canvas><div id="analyticsData"></div></div></div>
+
+        <!-- Admin Panel (Lecturer only) -->
+        <div id="admin" class="page"><div class="card"><h2>📢 Post Announcement</h2><input type="text" id="annTitle" placeholder="Title"><textarea id="annMsg" rows="2"></textarea><button class="btn" onclick="postAnnouncement()">Post</button></div>
+        <div class="card"><h2>📹 Add Video Lecture</h2><input type="text" id="videoTitle" placeholder="Title"><input type="text" id="videoUrl" placeholder="YouTube URL"><button class="btn" onclick="addVideo()">Add</button></div>
+        <div class="card"><h2>📚 Add Past Question</h2><input type="text" id="pqTitle" placeholder="Title"><input type="text" id="pqLink" placeholder="File/PDF Link"><button class="btn" onclick="addPastQ()">Add</button></div>
+        <div class="card"><h2>📅 Mark Attendance</h2><select id="attStudentSelect"></select><button class="btn-small" onclick="markAttendance(true)">Present</button><button class="btn-small" onclick="markAttendance(false)">Absent</button><div id="attendanceAdmin"></div></div>
+        <div class="card"><h2>📊 Grade Submissions</h2><div id="gradeAssignmentsList"></div></div>
+        <div class="card"><h2>➕ Add Student</h2><input type="text" id="newStdName"><input type="text" id="newStdMatric"><input type="email" id="newStdEmail"><input type="tel" id="newStdPhone"><button class="btn" onclick="addStudentByLecturer()">Add</button></div></div>
     </div>
-    <div class="footer" id="footer" style="display:none;"><p>Federal University Dutse - Department of Biotechnology (BTG) | 200 Level</p></div>
+    <div class="footer" id="footer" style="display:none;"><p>FUD Biotechnology (BTG) 200L | All-in-One Portal</p></div>
 </div>
 
 <script>
+// Initialize localStorage with all new structures
 function initDB(){
-    // ONLY LECTURER - no default students
-    if(!localStorage.getItem('users')) localStorage.setItem('users',JSON.stringify([
-        {id:1,name:"Lecturer Admin",matric:"LECTURER",email:"lecturer@fud.edu.ng",phone:"08000000000",password:"lecturer123",role:"lecturer"}
-    ]));
+    if(!localStorage.getItem('users')) localStorage.setItem('users',JSON.stringify([{id:1,name:"Lecturer Admin",matric:"LECTURER",email:"lecturer@fud.edu.ng",phone:"08000000000",password:"lecturer123",role:"lecturer"}]));
+    if(!localStorage.getItem('announcements')) localStorage.setItem('announcements',JSON.stringify([{title:"Welcome!",message:"All features active: Chat, Attendance, Videos, Past Q, Groups, Profile, Certificate.",date:new Date().toLocaleString()}]));
+    if(!localStorage.getItem('chatMessages')) localStorage.setItem('chatMessages',JSON.stringify([{user:"System",msg:"Welcome to the discussion forum!",time:new Date().toLocaleString()}]));
+    if(!localStorage.getItem('attendance')) localStorage.setItem('attendance',JSON.stringify([]));
+    if(!localStorage.getItem('videos')) localStorage.setItem('videos',JSON.stringify([{title:"Introduction to Biotechnology",url:"https://www.youtube.com/embed/dQw4w9WgXcQ"}]));
+    if(!localStorage.getItem('pastq')) localStorage.setItem('pastq',JSON.stringify([{title:"2019 Exam",link:"#"}]));
+    if(!localStorage.getItem('groups')) localStorage.setItem('groups',JSON.stringify([]));
+    if(!localStorage.getItem('groupSubmissions')) localStorage.setItem('groupSubmissions',JSON.stringify([]));
     if(!localStorage.getItem('submissions')) localStorage.setItem('submissions',JSON.stringify([]));
-    if(!localStorage.getItem('reports')) localStorage.setItem('reports',JSON.stringify([]));
     if(!localStorage.getItem('quizResults')) localStorage.setItem('quizResults',JSON.stringify([]));
-    if(!localStorage.getItem('announcements')) localStorage.setItem('announcements',JSON.stringify([{title:"Welcome BTG 200L!",message:"Welcome to the Biotechnology portal. Please register using your matric number (FUD/BTG/20/XXX).",date:new Date().toLocaleString()}]));
+    if(!localStorage.getItem('reports')) localStorage.setItem('reports',JSON.stringify([]));
 }
 let currentUser=null;
 
-function login(e){e.preventDefault();let val=document.getElementById('loginEmail').value.toLowerCase();let pwd=document.getElementById('loginPassword').value;let users=JSON.parse(localStorage.getItem('users'));let user=users.find(u=>(u.email.toLowerCase()===val||u.matric.toLowerCase()===val)&&u.password===pwd);if(user){currentUser=user;localStorage.setItem('currentUser',JSON.stringify(user));showMainApp();loadAllData();}else showAlert('loginAlert','❌ Invalid credentials','error');}
-function register(e){e.preventDefault();let name=document.getElementById('regName').value;let matric=document.getElementById('regMatric').value.toUpperCase();let email=document.getElementById('regEmail').value.toLowerCase();let phone=document.getElementById('regPhone').value;let pwd=document.getElementById('regPassword').value;let confirm=document.getElementById('regConfirmPassword').value;if(pwd!==confirm){showAlert('registerAlert','❌ Passwords do not match','error');return;}if(!matric.startsWith('FUD/BTG/')){showAlert('registerAlert','❌ Matric must start with FUD/BTG/','error');return;}let users=JSON.parse(localStorage.getItem('users'));if(users.find(u=>u.email===email||u.matric===matric)){showAlert('registerAlert','❌ Email or Matric already exists','error');return;}let newUser={id:users.length+1,name,matric,email,phone,password:pwd,role:'student'};users.push(newUser);localStorage.setItem('users',JSON.stringify(users));showAlert('registerAlert','✅ Registration successful! Please login.','success');setTimeout(()=>switchAuthTab('login'),2000);}
+// Auth
+function login(e){e.preventDefault();let val=document.getElementById('loginEmail').value.toLowerCase();let pwd=document.getElementById('loginPassword').value;let users=JSON.parse(localStorage.getItem('users'));let user=users.find(u=>(u.email===val||u.matric===val)&&u.password===pwd);if(user){currentUser=user;localStorage.setItem('currentUser',JSON.stringify(user));showMainApp();loadAllData();}else showAlert('loginAlert','❌ Invalid','error');}
+function register(e){e.preventDefault();let name=document.getElementById('regName').value;let matric=document.getElementById('regMatric').value.toUpperCase();let email=document.getElementById('regEmail').value.toLowerCase();let phone=document.getElementById('regPhone').value;let pwd=document.getElementById('regPassword').value;let confirm=document.getElementById('regConfirmPassword').value;if(pwd!==confirm){showAlert('registerAlert','❌ Passwords do not match','error');return;}if(!matric.startsWith('FUD/BTG/')){showAlert('registerAlert','❌ Matric must start with FUD/BTG/','error');return;}let users=JSON.parse(localStorage.getItem('users'));if(users.find(u=>u.email===email||u.matric===matric)){showAlert('registerAlert','❌ Already exists','error');return;}let newUser={id:users.length+1,name,matric,email,phone,password:pwd,role:'student',avatar:''};users.push(newUser);localStorage.setItem('users',JSON.stringify(users));showAlert('registerAlert','✅ Success! Login.','success');setTimeout(()=>switchAuthTab('login'),2000);}
 function showAlert(id,msg,type){let div=document.getElementById(id);div.innerHTML=msg;div.className=`alert ${type}`;setTimeout(()=>div.style.display='none',3000);}
 function showMainApp(){document.getElementById('authPage').style.display='none';document.getElementById('header').style.display='block';document.getElementById('nav').style.display='flex';document.getElementById('footer').style.display='block';document.getElementById('userNameDisplay').innerHTML=`👋 ${currentUser.name} (${currentUser.role==='lecturer'?'Lecturer':'Student'})`;if(currentUser.role==='lecturer')document.getElementById('lecturerBtn').style.display='block';showPage('announcements');}
-function logout(){currentUser=null;localStorage.removeItem('currentUser');document.getElementById('authPage').style.display='block';document.getElementById('header').style.display='none';document.getElementById('nav').style.display='none';document.getElementById('footer').style.display='none';}
+function logout(){currentUser=null;localStorage.removeItem('currentUser');location.reload();}
 
-function loadAllData(){loadAnnouncements();loadStudentList();loadAssignmentsList();loadMySubmissions();loadQuizHistory();loadMyReports();if(currentUser.role==='lecturer'){loadGradeAssignments();loadGradeReports();loadAllSummary();}}
-function loadStudentList(){
-    let users=JSON.parse(localStorage.getItem('users'));
-    let students=users.filter(u=>u.role==='student');
-    let html='';
-    students.forEach((s,i)=>{
-        html+=`<tr><td>${i+1}</td><td>${s.name}</td><td>${s.matric}</td><td>${s.email}</td><td>${s.phone}</td></tr>`;
-    });
-    if(students.length===0) html='<tr><td colspan="5" style="text-align:center;">No registered students yet. Students can register themselves or lecturer can add them.</td></tr>';
-    document.getElementById('studentList').innerHTML=html;
+function loadAllData(){
+    loadAnnouncements(); loadChat(); loadStudentList(); loadAssignmentsList(); loadAttendance(); loadVideos(); loadPastQ(); loadGroups(); loadProfile(); loadAnalytics(); loadCertificateStatus(); loadGradeAssignments(); loadMySubmissions();
 }
-function loadAssignmentsList(){let assignments=[{title:"Gene Cloning Techniques",due:"20th June",desc:"Explain steps and applications."},{title:"PCR Applications",due:"25th June",desc:"Diagnostic uses."},{title:"CRISPR Case Study",due:"30th June",desc:"Analyze a real-world application."}];let html='';assignments.forEach(a=>{html+=`<div class="assignment-item"><strong>📌 ${a.title}</strong><br><small>⏰ Due: ${a.due}</small><p>${a.desc}</p></div>`;});document.getElementById('assignmentsList').innerHTML=html;}
-function loadMySubmissions(){let subs=JSON.parse(localStorage.getItem('submissions'));let my=subs.filter(s=>s.studentMatric===currentUser.matric);let html='',total=0,count=0;if(my.length===0)html='<p>No submissions yet.</p>';else{my.forEach(s=>{html+=`<div class="assignment-item"><strong>${s.assignment}</strong><br><small>Submitted: ${s.date}</small><p>${s.answer ? s.answer.substring(0,100):'File submitted'}</p>`;if(s.fileName)html+=`<span>📎 File: ${s.fileName}</span><br>`;if(s.grade){html+=`<span class="grade-badge">Grade: ${s.grade}/10</span>`;total+=parseInt(s.grade);count++;}else html+=`<span class="grade-badge" style="background:#e67e22;">Not graded yet</span>`;html+=`</div>`;});}document.getElementById('mySubmissions').innerHTML=html;if(count>0)document.getElementById('studentAverage').innerHTML=`📊 Assignment Average: ${(total/count).toFixed(1)}/10`;else document.getElementById('studentAverage').innerHTML='';}
-function loadMyReports(){let reps=JSON.parse(localStorage.getItem('reports'));let my=reps.filter(r=>r.studentMatric===currentUser.matric);let html='';if(my.length===0)html='<p>No reports yet.</p>';else{my.forEach(r=>{html+=`<div class="assignment-item"><strong>📄 ${r.title}</strong><br><small>Submitted: ${r.date}</small><p>${r.content ? r.content.substring(0,100):'File uploaded'}</p>`;if(r.fileName)html+=`<span>📎 File: ${r.fileName}</span><br>`;if(r.grade)html+=`<span class="grade-badge">Grade: ${r.grade}/10</span>`;else html+=`<span class="grade-badge" style="background:#e67e22;">Not graded yet</span>`;html+=`</div>`;});}document.getElementById('myReports').innerHTML=html;}
-function loadQuizHistory(){let res=JSON.parse(localStorage.getItem('quizResults'));let my=res.filter(q=>q.studentMatric===currentUser.matric);let html='';if(my.length===0)html='<p>No quiz attempts yet.</p>';else my.forEach(q=>{html+=`<div class="assignment-item">🎯 Score: ${q.score}/3 - ${q.date}</div>`;});document.getElementById('quizHistory').innerHTML=html;}
-function loadGradeAssignments(){let subs=JSON.parse(localStorage.getItem('submissions'));let html='§<thead><table><th>Student</th><th>Matric</th><th>Assignment</th><th>Answer/File</th><th>Grade</th><th>Action</th></thead><tbody>';subs.forEach((s,idx)=>{html+=`<tr><td>${s.studentName}</td><td>${s.studentMatric}</td><td>${s.assignment}</td><td>${s.answer?s.answer.substring(0,30):s.fileName||'File'}</td><td><input type="number" id="grade_${idx}" class="grade-input" min="0" max="10" value="${s.grade||''}"></td><td><button class="btn-small" onclick="saveAssignmentGrade(${idx})">Save</button></td></tr>`;});html+='</tbody></table>';document.getElementById('gradeAssignmentsList').innerHTML=html;}
-function loadGradeReports(){let reps=JSON.parse(localStorage.getItem('reports'));let html='§<thead><tr><th>Student</th><th>Matric</th><th>Title</th><th>Content/File</th><th>Grade</th><th>Action</th></thead><tbody>';reps.forEach((r,idx)=>{html+=`<tr><td>${r.studentName}</td><td>${r.studentMatric}</td><td>${r.title}</td><td>${r.content?r.content.substring(0,30):r.fileName||'File'}</td><td><input type="number" id="reportGrade_${idx}" class="grade-input" min="0" max="10" value="${r.grade||''}"></td><td><button class="btn-small" onclick="saveReportGrade(${idx})">Save</button></td></tr>`;});html+='</tbody><tr>';document.getElementById('gradeReportsList').innerHTML=html;}
-function saveAssignmentGrade(idx){let grade=parseInt(document.getElementById(`grade_${idx}`).value);if(isNaN(grade)||grade<0||grade>10){alert('Enter 0-10');return;}let subs=JSON.parse(localStorage.getItem('submissions'));subs[idx].grade=grade;localStorage.setItem('submissions',JSON.stringify(subs));alert('✅ Grade saved');loadGradeAssignments();if(currentUser.role==='student')loadMySubmissions();}
-function saveReportGrade(idx){let grade=parseInt(document.getElementById(`reportGrade_${idx}`).value);if(isNaN(grade)||grade<0||grade>10){alert('Enter 0-10');return;}let reps=JSON.parse(localStorage.getItem('reports'));reps[idx].grade=grade;localStorage.setItem('reports',JSON.stringify(reps));alert('✅ Grade saved');loadGradeReports();if(currentUser.role==='student')loadMyReports();}
-function loadAllSummary(){let subs=JSON.parse(localStorage.getItem('submissions'));let reps=JSON.parse(localStorage.getItem('reports'));let quiz=JSON.parse(localStorage.getItem('quizResults'));document.getElementById('allSubmissionsSummary').innerHTML=`<div class="assignment-item">📊 Total Assignments: ${subs.length}</div><div class="assignment-item">📄 Total Reports: ${reps.length}</div><div class="assignment-item">📝 Quiz Attempts: ${quiz.length}</div>`;}
-function postAnnouncement(){let title=document.getElementById('announceTitle').value;let msg=document.getElementById('announceMsg').value;if(!title||!msg){alert('Enter title and message');return;}let ann=JSON.parse(localStorage.getItem('announcements'));ann.push({title,message:msg,date:new Date().toLocaleString()});localStorage.setItem('announcements',JSON.stringify(ann));alert('Announcement posted!');document.getElementById('announceTitle').value='';document.getElementById('announceMsg').value='';loadAnnouncements();}
-function exportToExcel(){let subs=JSON.parse(localStorage.getItem('submissions'));let reps=JSON.parse(localStorage.getItem('reports'));let quiz=JSON.parse(localStorage.getItem('quizResults'));let csvRows=[["Type","Student","Matric","Assignment/Title","Grade","Date"]];subs.forEach(s=>{csvRows.push([`Assignment`,s.studentName,s.studentMatric,s.assignment,s.grade||'Pending',s.date]);});reports.forEach(r=>{csvRows.push([`Report`,r.studentName,r.studentMatric,r.title,r.grade||'Pending',r.date]);});quiz.forEach(q=>{csvRows.push([`Quiz`,q.studentName,q.studentMatric,`Score ${q.score}/3`,q.score,q.date]);});let csvContent=csvRows.map(row=>row.join(",")).join("\n");let blob=new Blob([csvContent],{type:"text/csv"});let link=document.createElement("a");link.href=URL.createObjectURL(blob);link.download="biotech_grades.csv";link.click();}
-function addStudentByLecturer(){let name=document.getElementById('newStudentName').value;let matric=document.getElementById('newStudentMatric').value.toUpperCase();let email=document.getElementById('newStudentEmail').value.toLowerCase();let phone=document.getElementById('newStudentPhone').value;if(!name||!matric||!email){alert('Please fill name, matric, and email');return;}if(!matric.startsWith('FUD/BTG/')){alert('Matric must start with FUD/BTG/');return;}let users=JSON.parse(localStorage.getItem('users'));if(users.find(u=>u.matric===matric||u.email===email)){alert('Student already exists');return;}let defaultPass=matric.slice(-4);let newUser={id:users.length+1,name,matric,email,phone,password:defaultPass,role:'student'};users.push(newUser);localStorage.setItem('users',JSON.stringify(users));alert(`Student added! Default password: ${defaultPass}`);document.getElementById('newStudentName').value='';document.getElementById('newStudentMatric').value='';document.getElementById('newStudentEmail').value='';document.getElementById('newStudentPhone').value='';loadStudentList();}
-function loadAnnouncements(){let ann=JSON.parse(localStorage.getItem('announcements'));let html='';ann.slice().reverse().forEach(a=>{html+=`<div class="announcement-item"><strong>📢 ${a.title}</strong><br><small>${a.date}</small><p>${a.message}</p></div>`;});document.getElementById('announcementsList').innerHTML=html;}
-
-// File upload handlers
-document.getElementById('assignmentForm')?.addEventListener('submit', function(e){e.preventDefault();let assign=document.getElementById('assignSelect').value;let answer=document.getElementById('assignAnswer').value;let file=document.getElementById('assignFile').files[0];if(!assign)return;let submissions=JSON.parse(localStorage.getItem('submissions'));if(file){let reader=new FileReader();reader.onload=function(ev){submissions.push({studentMatric:currentUser.matric,studentName:currentUser.name,assignment:assign,answer:'',fileName:file.name,fileData:ev.target.result,date:new Date().toLocaleString(),grade:null});localStorage.setItem('submissions',JSON.stringify(submissions));showAlert('assignAlert','✅ Assignment with file submitted!','success');document.getElementById('assignmentForm').reset();loadMySubmissions();};reader.readAsDataURL(file);}else if(answer){submissions.push({studentMatric:currentUser.matric,studentName:currentUser.name,assignment:assign,answer:answer,date:new Date().toLocaleString(),grade:null});localStorage.setItem('submissions',JSON.stringify(submissions));showAlert('assignAlert','✅ Assignment submitted!','success');document.getElementById('assignmentForm').reset();loadMySubmissions();}else{alert('Please enter answer or select a file');}});
-document.getElementById('reportForm')?.addEventListener('submit', function(e){e.preventDefault();let title=document.getElementById('reportTitle').value;let content=document.getElementById('reportContent').value;let file=document.getElementById('reportFile').files[0];if(!title)return;let reports=JSON.parse(localStorage.getItem('reports'));if(file){let reader=new FileReader();reader.onload=function(ev){reports.push({studentMatric:currentUser.matric,studentName:currentUser.name,title,content:'',fileName:file.name,fileData:ev.target.result,date:new Date().toLocaleString(),grade:null});localStorage.setItem('reports',JSON.stringify(reports));showAlert('reportAlert','✅ Report with file submitted!','success');document.getElementById('reportForm').reset();loadMyReports();};reader.readAsDataURL(file);}else if(content){reports.push({studentMatric:currentUser.matric,studentName:currentUser.name,title,content,date:new Date().toLocaleString(),grade:null});localStorage.setItem('reports',JSON.stringify(reports));showAlert('reportAlert','✅ Report submitted!','success');document.getElementById('reportForm').reset();loadMyReports();}else{alert('Please enter content or select a file');}});
-document.getElementById('quizForm')?.addEventListener('submit',function(e){e.preventDefault();let q1=document.querySelector('input[name="q1"]:checked')?.value;let q2=document.querySelector('input[name="q2"]:checked')?.value;let q3=document.querySelector('input[name="q3"]:checked')?.value;let score=0;if(q1==='A')score++;if(q2==='B')score++;if(q3==='B')score++;let results=JSON.parse(localStorage.getItem('quizResults'));results.push({studentMatric:currentUser.matric,studentName:currentUser.name,score,date:new Date().toLocaleString()});localStorage.setItem('quizResults',JSON.stringify(results));document.getElementById('quizResult').innerHTML=`<div class="alert success">🎯 Your score: ${score}/3</div>`;loadQuizHistory();document.querySelectorAll('input[type="radio"]').forEach(r=>r.checked=false);});
+function loadAnnouncements(){let ann=JSON.parse(localStorage.getItem('announcements'));let html='';ann.slice().reverse().forEach(a=>{html+=`<div class="assignment-item"><strong>📢 ${a.title}</strong><br><small>${a.date}</small><p>${a.message}</p></div>`;});document.getElementById('announcementsList').innerHTML=html;}
+function loadChat(){let msgs=JSON.parse(localStorage.getItem('chatMessages'));let html='';msgs.forEach(m=>{html+=`<div class="chat-message"><span class="name">${m.user}</span> <small>${m.time}</small><br>${m.msg}</div>`;});document.getElementById('chatMessages').innerHTML=html;}
+function sendChatMessage(){let msg=document.getElementById('chatMsg').value;if(!msg)return;let msgs=JSON.parse(localStorage.getItem('chatMessages'));msgs.push({user:currentUser.name,msg:msg,time:new Date().toLocaleString()});localStorage.setItem('chatMessages',JSON.stringify(msgs));document.getElementById('chatMsg').value='';loadChat();notifyUser("New chat message from "+currentUser.name);}
+function loadStudentList(){let users=JSON.parse(localStorage.getItem('users'));let students=users.filter(u=>u.role==='student');let html='<table><tr><th>#</th><th>Name</th><th>Matric</th><th>Email</th><th>Phone</th></tr>';students.forEach((s,i)=>{html+=`<tr><td>${i+1}</td><td>${s.name}</td><td>${s.matric}</td><td>${s.email}</td><td>${s.phone}</td></tr>`;});html+='</table>';document.getElementById('studentList').innerHTML=html;}
+function loadAssignmentsList(){let subs=JSON.parse(localStorage.getItem('submissions'));let my=subs.filter(s=>s.studentMatric===currentUser.matric);let html='';my.forEach(s=>{html+=`<div class="assignment-item"><strong>${s.assignment}</strong><br>Grade: ${s.grade||'Pending'}<br>${s.answer||'File'}</div>`;});document.getElementById('mySubmissions').innerHTML=html||'No submissions.';}
+function submitAssignment(){let assign=document.getElementById('assignSelect').value;let ans=document.getElementById('assignAnswer').value;let file=document.getElementById('assignFile').files[0];let subs=JSON.parse(localStorage.getItem('submissions'));if(file){let reader=new FileReader();reader.onload=function(e){subs.push({studentMatric:currentUser.matric,studentName:currentUser.name,assignment:assign,answer:'',fileName:file.name,fileData:e.target.result,date:new Date().toLocaleString(),grade:null});localStorage.setItem('submissions',JSON.stringify(subs));alert('Submitted');loadAssignmentsList();};reader.readAsDataURL(file);}else if(ans){subs.push({studentMatric:currentUser.matric,studentName:currentUser.name,assignment:assign,answer:ans,date:new Date().toLocaleString(),grade:null});localStorage.setItem('submissions',JSON.stringify(subs));alert('Submitted');loadAssignmentsList();}else alert('Enter answer or file');}
+function loadAttendance(){let att=JSON.parse(localStorage.getItem('attendance'));let myAtt=att.filter(a=>a.studentMatric===currentUser.matric);let present=myAtt.filter(a=>a.status===true).length;let total=myAtt.length;let percent=total?Math.round(present/total*100):0;let html=`<div class="assignment-item"><strong>Your attendance: ${present}/${total} (${percent}%)</strong></div><h3>Detailed records</h3>`;myAtt.forEach(a=>{html+=`<div>${a.date}: ${a.status?'✅ Present':'❌ Absent'}</div>`;});document.getElementById('attendanceView').innerHTML=html;}
+function markAttendance(status){if(currentUser.role!=='lecturer')return;let studentMatric=document.getElementById('attStudentSelect').value;if(!studentMatric)return;let att=JSON.parse(localStorage.getItem('attendance'));att.push({studentMatric,date:new Date().toLocaleDateString(),status});localStorage.setItem('attendance',JSON.stringify(att));alert('Attendance marked');loadAttendance();}
+function loadVideos(){let vids=JSON.parse(localStorage.getItem('videos'));let html='';vids.forEach(v=>{html+=`<div class="video-item"><strong>${v.title}</strong><br><iframe width="100%" height="200" src="${v.url}" frameborder="0" allowfullscreen></iframe></div>`;});document.getElementById('videosList').innerHTML=html;}
+function addVideo(){let title=document.getElementById('videoTitle').value;let url=document.getElementById('videoUrl').value;if(!title||!url)return;let vids=JSON.parse(localStorage.getItem('videos'));vids.push({title,url});localStorage.setItem('videos',JSON.stringify(vids));alert('Video added');loadVideos();}
+function loadPastQ(){let pq=JSON.parse(localStorage.getItem('pastq'));let html='';pq.forEach(p=>{html+=`<div class="pastq-item"><strong>${p.title}</strong><br><a href="${p.link}" target="_blank">Download</a></div>`;});document.getElementById('pastqList').innerHTML=html;}
+function addPastQ(){let title=document.getElementById('pqTitle').value;let link=document.getElementById('pqLink').value;if(!title||!link)return;let pq=JSON.parse(localStorage.getItem('pastq'));pq.push({title,link});localStorage.setItem('pastq',JSON.stringify(pq));alert('Added');loadPastQ();}
+function loadGroups(){let groups=JSON.parse(localStorage.getItem('groups'));let html='';groups.forEach(g=>{html+=`<div class="group-item"><strong>${g.name}</strong> (ID: ${g.id})<br>Members: ${g.members.join(', ')}<br>Submissions: ${g.submissions?.length||0}</div>`;});document.getElementById('groupsList').innerHTML=html;let groupSelect=document.getElementById('groupSelect');groupSelect.innerHTML='';groups.forEach(g=>{groupSelect.innerHTML+=`<option value="${g.id}">${g.name}</option>`;});}
+function createGroup(){let name=document.getElementById('groupName').value;if(!name)return;let groups=JSON.parse(localStorage.getItem('groups'));let newId='G'+Date.now();groups.push({id:newId,name:name,creator:currentUser.matric,members:[currentUser.matric],submissions:[]});localStorage.setItem('groups',JSON.stringify(groups));alert('Group created! ID: '+newId);loadGroups();}
+function joinGroup(){let groupId=document.getElementById('joinGroupId').value;let groups=JSON.parse(localStorage.getItem('groups'));let group=groups.find(g=>g.id===groupId);if(!group){alert('Group not found');return;}if(!group.members.includes(currentUser.matric))group.members.push(currentUser.matric);localStorage.setItem('groups',JSON.stringify(groups));alert('Joined group');loadGroups();}
+function submitGroupWork(){let groupId=document.getElementById('groupSelect').value;let answer=document.getElementById('groupAnswer').value;if(!groupId||!answer)return;let groups=JSON.parse(localStorage.getItem('groups'));let group=groups.find(g=>g.id===groupId);if(!group.members.includes(currentUser.matric)){alert('You are not a member');return;}group.submissions=group.submissions||[];group.submissions.push({student:currentUser.matric,answer:answer,date:new Date().toLocaleString(),grade:null});localStorage.setItem('groups',JSON.stringify(groups));alert('Group submission saved');loadGroups();}
+function loadProfile(){let user=currentUser;document.getElementById('profileName').value=user.name;document.getElementById('profilePhone').value=user.phone||'';let avatar=user.avatar||'';document.getElementById('avatarImg').src=avatar||'https://via.placeholder.com/50';}
+function updateProfile(){let name=document.getElementById('profileName').value;let phone=document.getElementById('profilePhone').value;let file=document.getElementById('avatarUpload').files[0];let users=JSON.parse(localStorage.getItem('users'));let userIndex=users.findIndex(u=>u.id===currentUser.id);if(file){let reader=new FileReader();reader.onload=function(e){users[userIndex].avatar=e.target.result;users[userIndex].name=name;users[userIndex].phone=phone;localStorage.setItem('users',JSON.stringify(users));currentUser=users[userIndex];localStorage.setItem('currentUser',JSON.stringify(currentUser));alert('Profile updated');loadProfile();};reader.readAsDataURL(file);}else{users[userIndex].name=name;users[userIndex].phone=phone;localStorage.setItem('users',JSON.stringify(users));currentUser=users[userIndex];localStorage.setItem('currentUser',JSON.stringify(currentUser));alert('Profile updated');loadProfile();}}
+function loadCertificateStatus(){let subs=JSON.parse(localStorage.getItem('submissions'));let mySubs=subs.filter(s=>s.studentMatric===currentUser.matric&&s.grade&&s.grade>=5);let percent=mySubs.length/3*100;if(percent>=80)document.getElementById('certificateStatus').innerHTML='<div class="assignment-item">✅ You are eligible for certificate! (Completed '+mySubs.length+'/3 assignments with grade ≥5)</div>';else document.getElementById('certificateStatus').innerHTML='<div class="assignment-item">⚠️ You need at least 80% completion (3 assignments graded ≥5) to get certificate. Current: '+Math.floor(percent)+'%</div>';}
+function generateCertificate(){let subs=JSON.parse(localStorage.getItem('submissions'));let mySubs=subs.filter(s=>s.studentMatric===currentUser.matric&&s.grade&&s.grade>=5);if(mySubs.length/3*100<80){alert('Not eligible yet');return;}let win=window.open();win.document.write(`<html><head><title>Certificate</title><style>body{font-family:sans-serif;text-align:center;padding:50px;}h1{color:#1a5f3a;}h2{margin:50px 0;}</style></head><body><h1>Federal University Dutse</h1><h2>Certificate of Completion</h2><p>This certifies that <strong>${currentUser.name}</strong> (${currentUser.matric}) has successfully completed the Biotechnology 200L course with distinction.</p><p>Date: ${new Date().toLocaleDateString()}</p><br><br>____________________<br>Head of Department</body></html>`);win.document.close();win.print();}
+function loadAnalytics(){let subs=JSON.parse(localStorage.getItem('submissions'));let grades=subs.filter(s=>s.grade).map(s=>s.grade);let avg=grades.length?grades.reduce((a,b)=>a+b,0)/grades.length:0;document.getElementById('analyticsData').innerHTML=`<div>Average Assignment Grade: ${avg.toFixed(1)}/10</div><div>Total Submissions: ${subs.length}</div>`;let ctx=document.getElementById('scoreChart').getContext('2d');new Chart(ctx,{type:'bar',data:{labels:['Assignments'],datasets:[{label:'Average Grade',data:[avg],backgroundColor:'#1a5f3a'}]}});}
+function loadGradeAssignments(){let subs=JSON.parse(localStorage.getItem('submissions'));let html='<table><tr><th>Student</th><th>Assignment</th><th>Grade</th><th>Action</th></tr>';subs.forEach((s,idx)=>{html+=`<tr><td>${s.studentName}</td><td>${s.assignment}</td><td><input type="number" id="grade_${idx}" min="0" max="10" value="${s.grade||''}"></td><td><button class="btn-small" onclick="saveGrade(${idx})">Save</button></td></tr>`;});html+='</table>';document.getElementById('gradeAssignmentsList').innerHTML=html;}
+function saveGrade(idx){let grade=parseInt(document.getElementById(`grade_${idx}`).value);if(isNaN(grade)||grade<0||grade>10)return;let subs=JSON.parse(localStorage.getItem('submissions'));subs[idx].grade=grade;localStorage.setItem('submissions',JSON.stringify(subs));alert('Grade saved');loadGradeAssignments();if(currentUser.role!=='lecturer')loadMySubmissions();}
+function addStudentByLecturer(){let name=document.getElementById('newStdName').value;let matric=document.getElementById('newStdMatric').value.toUpperCase();let email=document.getElementById('newStdEmail').value.toLowerCase();let phone=document.getElementById('newStdPhone').value;if(!name||!matric||!email)return;let users=JSON.parse(localStorage.getItem('users'));if(users.find(u=>u.matric===matric)){alert('Exists');return;}users.push({id:users.length+1,name,matric,email,phone,password:matric.slice(-4),role:'student'});localStorage.setItem('users',JSON.stringify(users));alert('Student added');loadStudentList();}
+function postAnnouncement(){let title=document.getElementById('annTitle').value;let msg=document.getElementById('annMsg').value;if(!title||!msg)return;let ann=JSON.parse(localStorage.getItem('announcements'));ann.push({title,message:msg,date:new Date().toLocaleString()});localStorage.setItem('announcements',JSON.stringify(ann));alert('Posted');loadAnnouncements();notifyUser('New announcement: '+title);}
+function notifyUser(msg){if(Notification.permission==='granted')new Notification(msg);else if(Notification.permission!=='denied')Notification.requestPermission().then(perm=>{if(perm==='granted')new Notification(msg);});}
+function loadMySubmissions(){let subs=JSON.parse(localStorage.getItem('submissions'));let my=subs.filter(s=>s.studentMatric===currentUser.matric);let html='';my.forEach(s=>{html+=`<div class="assignment-item"><strong>${s.assignment}</strong> - Grade: ${s.grade||'Pending'}</div>`;});document.getElementById('mySubmissions').innerHTML=html;}
 function showPage(pageId){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(pageId).classList.add('active');}
-function switchAuthTab(tab){let loginForm=document.getElementById('loginForm');let regForm=document.getElementById('registerForm');if(tab==='login'){loginForm.classList.add('active');regForm.classList.remove('active');document.querySelectorAll('.auth-tab')[0].classList.add('active');document.querySelectorAll('.auth-tab')[1].classList.remove('active');}else{loginForm.classList.remove('active');regForm.classList.add('active');document.querySelectorAll('.auth-tab')[0].classList.remove('active');document.querySelectorAll('.auth-tab')[1].classList.add('active');}}
+function switchAuthTab(tab){let login=document.getElementById('loginForm');let reg=document.getElementById('registerForm');let tabs=document.querySelectorAll('.auth-tab');if(tab==='login'){login.classList.add('active');reg.classList.remove('active');tabs[0].classList.add('active');tabs[1].classList.remove('active');}else{login.classList.remove('active');reg.classList.add('active');tabs[0].classList.remove('active');tabs[1].classList.add('active');}}
 function checkLoggedIn(){let saved=localStorage.getItem('currentUser');if(saved){currentUser=JSON.parse(saved);showMainApp();loadAllData();}}
 initDB();checkLoggedIn();
 </script>
