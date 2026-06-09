@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FUD Biotechnology 200L | Secure Portal with Grading</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a5f3a 0%, #0d3b23 100%);
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255,255,255,0.98);
+            padding: 1rem 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1300px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo h1 {
+            color: #1a5f3a;
+            font-size: 1.3rem;
+        }
+
+        .logo p {
+            color: #666;
+            font-size: 0.75rem;
+        }
+
+        .user-info {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .user-badge {
+            background: #1a5f3a;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            font-size: 0.85rem;
+        }
+
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.85rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .nav {
+            background: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-btn {
+            background: #1a5f3a;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 30px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: #0d3b23;
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+
+        .page {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 1.8rem;
+            margin-bottom: 1.8rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #1a5f3a;
+            margin-bottom: 1.2rem;
+            border-left: 5px solid #1a5f3a;
+            padding-left: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.3rem;
+            font-weight: 500;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .btn {
+            background: #1a5f3a;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: bold;
+            width: 100%;
+        }
+
+        .btn-small {
+            background: #1a5f3a;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .btn:hover, .btn-small:hover {
+            background: #0d3b23;
+        }
+
+        .auth-container {
+            max-width: 500px;
+            margin: 3rem auto;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 1rem;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .auth-tab.active {
+            background: #1a5f3a;
+            color: white;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #1a5f3a;
+            color: white;
+        }
+
+        .assignment-item {
+            background: #f9f9f9;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+            border-left: 4px solid #1a5f3a;
+        }
+
+        .quiz-question {
+            background: #f0f7f3;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 10px;
+        }
+
+        .alert {
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .alert.success {
+            background: #d4edda;
+            color: #155724;
+            display: block;
+        }
+
+        .alert.error {
+            background: #f8d7da;
+            color: #721c24;
+            display: block;
+        }
+
+        .grade-badge {
+            background: #1a5f3a;
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .grade-input {
+            width: 60px;
+            padding: 5px;
+            margin-right: 5px;
+        }
+
+        .average-score {
+            background: #1a5f3a;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            th, td { font-size: 0.7rem; padding: 6px; }
+            .card { padding: 1rem; }
+            .nav-btn { padding: 0.4rem 0.8rem; font-size: 0.7rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="app">
+    <div class="header" id="header" style="display:none;">
+        <div class="header-content">
+            <div class="logo">
+                <h1>🧬 FUD BIOTECHNOLOGY 200L</h1>
+                <p>Federal University Dutse</p>
+            </div>
+            <div class="user-info">
+                <span class="user-badge" id="userNameDisplay"></span>
+                <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav" id="nav" style="display:none;">
+        <button class="nav-btn" onclick="showPage('students')">👥 Students</button>
+        <button class="nav-btn" onclick="showPage('assignments')">📝 Assignments</button>
+        <button class="nav-btn" onclick="showPage('quiz')">📊 Quiz</button>
+        <button class="nav-btn" onclick="showPage('reports')">📄 Reports</button>
+        <button class="nav-btn" onclick="showPage('research')">🔬 Research</button>
+        <button class="nav-btn" id="lecturerBtn" style="display:none;" onclick="showPage('admin')">👨‍🏫 Grade & Admin</button>
+    </div>
+
+    <div class="container">
+        <!-- LOGIN / REGISTER PAGE -->
+        <div id="authPage" class="auth-container">
+            <div class="card">
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchAuthTab('login')">🔐 Login</button>
+                    <button class="auth-tab" onclick="switchAuthTab('register')">📝 Register</button>
+                </div>
+
+                <div id="loginForm" class="auth-form active">
+                    <form onsubmit="login(event)">
+                        <div class="form-group">
+                            <label>📧 Email or Matric Number</label>
+                            <input type="text" id="loginEmail" placeholder="e.g., aisha.bello@fud.edu.ng" required>
+                        </div>
+                        <div class="form-group">
+                            <label>🔒 Password</label>
+                            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                    <div id="loginAlert" class="alert"></div>
+                </div>
+
+                <div id="registerForm" class="auth-form">
+                    <form onsubmit="register(event)">
+                        <div class="form-group">
+                            <label>👤 Full Name</label>
+                            <input type="text" id="regName" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>🎓 Matric Number</label>
+                            <input type="text" id="regMatric" placeholder="e.g., FUD/BTC/20/001" required>
+                        </div>
+                        <div class="form-group">
+                            <label>📧 Email Address</label>
+                            <input type="email" id="regEmail" placeholder="email@fud.edu.ng" required>
+                        </div>
+                        <div class="form-group">
+                            <label>📞 Phone Number</label>
+                            <input type="tel" id="regPhone" placeholder="08012345678" required>
+                        </div>
+                        <div class="form-group">
+                            <label>🔒 Password</label>
+                            <input type="password" id="regPassword" placeholder="Create password" required>
+                        </div>
+                        <div class="form-group">
+                            <label>🔒 Confirm Password</label>
+                            <input type="password" id="regConfirmPassword" placeholder="Confirm password" required>
+                        </div>
+                        <button type="submit" class="btn">Create Account</button>
+                    </form>
+                    <div id="registerAlert" class="alert"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STUDENTS PAGE -->
+        <div id="students" class="page">
+            <div class="card">
+                <h2>👥 200-Level Biotechnology Students</h2>
+                <div class="table-container">
+                    <table id="studentTable">
+                        <thead><tr><th>S/N</th><th>Name</th><th>Matric</th><th>Email</th><th>Phone</th></tr></thead>
+                        <tbody id="studentList"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ASSIGNMENTS PAGE -->
+        <div id="assignments" class="page">
+            <div class="card">
+                <h2>📝 Current Assignments</h2>
+                <div id="assignmentsList"></div>
+            </div>
+            <div class="card">
+                <h2>📎 Submit Assignment</h2>
+                <form id="assignmentForm">
+                    <div class="form-group">
+                        <select id="assignSelect" required>
+                            <option value="">-- Select Assignment --</option>
+                            <option>Gene Cloning Techniques (Due: 20th June 2026)</option>
+                            <option>PCR Applications (Due: 25th June 2026)</option>
+                            <option>CRISPR Case Study (Due: 30th June 2026)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="assignAnswer" rows="6" placeholder="Write your answer here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Submit Assignment</button>
+                </form>
+                <div id="assignAlert" class="alert"></div>
+            </div>
+            <div class="card">
+                <h2>📊 My Grades & Submissions</h2>
+                <div id="mySubmissions"></div>
+                <div id="studentAverage" class="average-score"></div>
+            </div>
+        </div>
+
+        <!-- QUIZ PAGE -->
+        <div id="quiz" class="page">
+            <div class="card">
+                <h2>📊 Biotechnology Quiz</h2>
+                <form id="quizForm">
+                    <div class="quiz-question">
+                        <p><strong>1. What does PCR stand for?</strong></p>
+                        <label><input type="radio" name="q1" value="A"> A) Polymerase Chain Reaction</label><br>
+                        <label><input type="radio" name="q1" value="B"> B) Protein Coding Region</label><br>
+                        <label><input type="radio" name="q1" value="C"> C) Polymerase Creating RNA</label>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>2. Which enzyme cuts DNA?</strong></p>
+                        <label><input type="radio" name="q2" value="A"> A) DNA Ligase</label><br>
+                        <label><input type="radio" name="q2" value="B"> B) Restriction Enzyme</label><br>
+                        <label><input type="radio" name="q2" value="C"> C) RNA Polymerase</label>
+                    </div>
+                    <div class="quiz-question">
+                        <p><strong>3. CRISPR-Cas9 is used for?</strong></p>
+                        <label><input type="radio" name="q3" value="A"> A) Protein synthesis</label><br>
+                        <label><input type="radio" name="q3" value="B"> B) Gene editing</label><br>
+                        <label><input type="radio" name="q3" value="C"> C) Cell division</label>
+                    </div>
+                    <button type="submit" class="btn">Submit Quiz</button>
+                </form>
+                <div id="quizResult"></div>
+            </div>
+            <div class="card">
+                <h2>📊 My Quiz History</h2>
+                <div id="quizHistory"></div>
+            </div>
+        </div>
+
+        <!-- REPORTS PAGE -->
+        <div id="reports" class="page">
+            <div class="card">
+                <h2>📄 Submit Lab Report</h2>
+                <form id="reportForm">
+                    <div class="form-group">
+                        <input type="text" id="reportTitle" placeholder="Report Title" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="reportContent" rows="8" placeholder="Write your report here..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Submit Report</button>
+                </form>
+                <div id="reportAlert" class="alert"></div>
+            </div>
+            <div class="card">
+                <h2>📂 My Reports & Grades</h2>
+                <div id="myReports"></div>
+            </div>
+        </div>
+
+        <!-- RESEARCH PAGE -->
+        <div id="research" class="page">
+            <div class="card">
+                <h2>🔬 Research Resources</h2>
+                <div class="assignment-item"><strong>📖 Open Access Journals:</strong><br><a href="https://pubmed.ncbi.nlm.nih.gov/" target="_blank">PubMed Central</a></div>
+                <div class="assignment-item"><strong>🧪 Lab Protocols:</strong><br><a href="https://www.addgene.org/" target="_blank">Addgene Guide</a></div>
+                <div class="assignment-item"><strong>📚 Research Topics:</strong><ul style="margin-top:10px;margin-left:20px;"><li>Antibiotic resistance gene detection using PCR</li><li>Plant tissue culture for crop improvement</li><li>Bioinformatics analysis</li><li>CRISPR-Cas9 applications</li></ul></div>
+            </div>
+        </div>
+
+        <!-- ADMIN / GRADING PAGE -->
+        <div id="admin" class="page">
+            <div class="card">
+                <h2>👨‍🏫 Grade Assignments</h2>
+                <div id="gradeAssignmentsList"></div>
+            </div>
+            <div class="card">
+                <h2>👨‍🏫 Grade Lab Reports</h2>
+                <div id="gradeReportsList"></div>
+            </div>
+            <div class="card">
+                <h2>📊 All Submissions Summary</h2>
+                <div id="allSubmissionsSummary"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer" id="footer" style="display:none;">
+        <p>Federal University Dutse - Department of Biotechnology | 200 Level</p>
+    </div>
+</div>
+
+<script>
+    // INITIALIZE DATABASE
+    function initDB() {
+        if (!localStorage.getItem('users')) {
+            localStorage.setItem('users', JSON.stringify([
+                { id: 1, name: "Lecturer Admin", matric: "LECTURER", email: "lecturer@fud.edu.ng", phone: "08000000000", password: "lecturer123", role: "lecturer" },
+                { id: 2, name: "Aisha Bello Umar", matric: "FUD/BTC/20/001", email: "aisha.bello@fud.edu.ng", phone: "08031234567", password: "pass123", role: "student" }
+            ]));
+        }
+        if (!localStorage.getItem('submissions')) localStorage.setItem('submissions', JSON.stringify([]));
+        if (!localStorage.getItem('reports')) localStorage.setItem('reports', JSON.stringify([]));
+        if (!localStorage.getItem('quizResults')) localStorage.setItem('quizResults', JSON.stringify([]));
+        if (!localStorage.getItem('students')) {
+            localStorage.setItem('students', JSON.stringify([
+                { id: 1, name: "Aisha Bello Umar", matric: "FUD/BTC/20/001", email: "aisha.bello@fud.edu.ng", phone: "08031234567" },
+                { id: 2, name: "Musa Ibrahim Lawan", matric: "FUD/BTC/20/002", email: "musa.ibrahim@fud.edu.ng", phone: "08031234568" },
+                { id: 3, name: "Fatima Sani Abdullahi", matric: "FUD/BTC/20/003", email: "fatima.sani@fud.edu.ng", phone: "08031234569" },
+                { id: 4, name: "Adamu Yahaya Garba", matric: "FUD/BTC/20/004", email: "adamu.garba@fud.edu.ng", phone: "08031234570" },
+                { id: 5, name: "Zainab Mohammed Aliyu", matric: "FUD/BTC/20/005", email: "zainab.mohammed@fud.edu.ng", phone: "08031234571" }
+            ]));
+        }
+    }
+
+    let currentUser = null;
+
+    function login(event) {
+        event.preventDefault();
+        const emailOrMatric = document.getElementById('loginEmail').value.toLowerCase();
+        const password = document.getElementById('loginPassword').value;
+        const users = JSON.parse(localStorage.getItem('users'));
+        const user = users.find(u => (u.email.toLowerCase() === emailOrMatric || u.matric.toLowerCase() === emailOrMatric) && u.password === password);
+        if (user) {
+            currentUser = user;
+            localStorage.setItem('currentUser', JSON.stringify(user));
+            showMainApp();
+            loadAllData();
+        } else {
+            showAlert('loginAlert', '❌ Invalid email/matric or password', 'error');
+        }
+    }
+
+    function register(event) {
+        event.preventDefault();
+        const name = document.getElementById('regName').value;
+        const matric = document.getElementById('regMatric').value.toUpperCase();
+        const email = document.getElementById('regEmail').value.toLowerCase();
+        const phone = document.getElementById('regPhone').value;
+        const password = document.getElementById('regPassword').value;
+        const confirm = document.getElementById('regConfirmPassword').value;
+        if (password !== confirm) { showAlert('registerAlert', '❌ Passwords do not match', 'error'); return; }
+        const users = JSON.parse(localStorage.getItem('users'));
+        if (users.find(u => u.email === email || u.matric === matric)) {
+            showAlert('registerAlert', '❌ Email or Matric already exists', 'error');
+            return;
+        }
+        const newUser = { id: users.length + 1, name, matric, email, phone, password, role: 'student' };
+        users.push(newUser);
+        localStorage.setItem('users', JSON.stringify(users));
+        const students = JSON.parse(localStorage.getItem('students'));
+        students.push({ id: students.length + 1, name, matric, email, phone });
+        localStorage.setItem('students', JSON.stringify(students));
+        showAlert('registerAlert', '✅ Registration successful! Please login.', 'success');
+        setTimeout(() => switchAuthTab('login'), 2000);
+    }
+
+    function showAlert(elementId, message, type) {
+        const alertDiv = document.getElementById(elementId);
+        alertDiv.innerHTML = message;
+        alertDiv.className = `alert ${type}`;
+        setTimeout(() => alertDiv.style.display = 'none', 3000);
+    }
+
+    function showMainApp() {
+        document.getElementById('authPage').style.display = 'none';
+        document.getElementById('header').style.display = 'block';
+        document.getElementById('nav').style.display = 'flex';
+        document.getElementById('footer').style.display = 'block';
+        document.getElementById('userNameDisplay').innerHTML = `👋 ${currentUser.name} (${currentUser.role === 'lecturer' ? 'Lecturer' : 'Student'})`;
+        if (currentUser.role === 'lecturer') document.getElementById('lecturerBtn').style.display = 'block';
+        showPage('students');
+    }
+
+    function logout() {
+        currentUser = null;
+        localStorage.removeItem('currentUser');
+        document.getElementById('authPage').style.display = 'block';
+        document.getElementById('header').style.display = 'none';
+        document.getElementById('nav').style.display = 'none';
+        document.getElementById('footer').style.display = 'none';
+    }
+
+    function loadAllData() {
+        loadStudentList();
+        loadAssignmentsList();
+        loadMySubmissions();
+        loadQuizHistory();
+        loadMyReports();
+        if (currentUser.role === 'lecturer') {
+            loadGradeAssignments();
+            loadGradeReports();
+            loadAllSummary();
+        }
+    }
+
+    function loadStudentList() {
+        const students = JSON.parse(localStorage.getItem('students'));
+        let html = '';
+        students.forEach((s, i) => { html += `<tr><td>${i+1}</td><td>${s.name}</td><td>${s.matric}</td><td>${s.email}</td><td>${s.phone}</td></tr>`; });
+        document.getElementById('studentList').innerHTML = html;
+    }
+
+    function loadAssignmentsList() {
+        const assignments = [
+            { title: "Gene Cloning Techniques", due: "20th June 2026", desc: "Explain gene cloning steps and applications." },
+            { title: "PCR Applications", due: "25th June 2026", desc: "Discuss diagnostic uses of PCR." },
+            { title: "CRISPR Case Study", due: "30th June 2026", desc: "Analyze a CRISPR application." }
+        ];
+        let html = '';
+        assignments.forEach(a => { html += `<div class="assignment-item"><strong>📌 ${a.title}</strong><br><small>⏰ Due: ${a.due}</small><p>${a.desc}</p></div>`; });
+        document.getElementById('assignmentsList').innerHTML = html;
+    }
+
+    function loadMySubmissions() {
+        const submissions = JSON.parse(localStorage.getItem('submissions'));
+        const mySubs = submissions.filter(s => s.studentMatric === currentUser.matric);
+        let html = '', total = 0, count = 0;
+        if (mySubs.length === 0) html = '<p>No submissions yet.</p>';
+        else {
+            mySubs.forEach(s => {
+                html += `<div class="assignment-item"><strong>${s.assignment}</strong><br><small>Submitted: ${s.date}</small><p>${s.answer.substring(0, 100)}...</p>`;
+                if (s.grade) { html += `<span class="grade-badge">Grade: ${s.grade}/10</span>`; total += parseInt(s.grade); count++; }
+                else html += `<span class="grade-badge" style="background:#e67e22;">Not graded yet</span>`;
+                html += `</div>`;
+            });
+        }
+        document.getElementById('mySubmissions').innerHTML = html;
+        if (count > 0) document.getElementById('studentAverage').innerHTML = `📊 Assignment Average: ${(total/count).toFixed(1)}/10`;
+        else document.getElementById('studentAverage').innerHTML = '';
+    }
+
+    function loadMyReports() {
+        const reports = JSON.parse(localStorage.getItem('reports'));
+        const myReps = reports.filter(r => r.studentMatric === currentUser.matric);
+        let html = '';
+        if (myReps.length === 0) html = '<p>No reports submitted yet.</p>';
+        else {
+            myReps.forEach(r => {
+                html += `<div class="assignment-item"><strong>📄 ${r.title}</strong><br><small>Submitted: ${r.date}</small><p>${r.content.substring(0, 100)}...</p>`;
+                if (r.grade) html += `<span class="grade-badge">Grade: ${r.grade}/10</span>`;
+                else html += `<span class="grade-badge" style="background:#e67e22;">Not graded yet</span>`;
+                html += `</div>`;
+            });
+        }
+        document.getElementById('myReports').innerHTML = html;
+    }
+
+    function loadQuizHistory() {
+        const quizResults = JSON.parse(localStorage.getItem('quizResults'));
+        const myQuizzes = quizResults.filter(q => q.studentMatric === currentUser.matric);
+        let html = '';
+        if (myQuizzes.length === 0) html = '<p>No quiz attempts yet.</p>';
+        else myQuizzes.forEach(q => { html += `<div class="assignment-item">🎯 Score: ${q.score}/3 - ${q.date}</div>`; });
+        document.getElementById('quizHistory').innerHTML = html;
+    }
+
+    function loadGradeAssignments() {
+        const submissions = JSON.parse(localStorage.getItem('submissions'));
+        let html = '<table><tr><th>Student</th><th>Matric</th><th>Assignment</th><th>Answer</th><th>Grade</th><th>Action</th></tr>';
+        submissions.forEach((s, idx) => {
+            html += `<tr>
+                        <td>${s.studentName}</td>
+                        <td>${s.studentMatric}</td>
+                        <td>${s.assignment}</td>
+                        <td>${s.answer.substring(0, 50)}...</td>
+                        <td><input type="number" id="grade_${idx}" class="grade-input" min="0" max="10" value="${s.grade || ''}" placeholder="0-10"></td>
+                        <td><button class="btn-small" onclick="saveAssignmentGrade(${idx})">Save Grade</button></td>
+                     </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('gradeAssignmentsList').innerHTML = html;
+    }
+
+    function loadGradeReports() {
+        const reports = JSON.parse(localStorage.getItem('reports'));
+        let html = '<table><tr><th>Student</th><th>Matric</th><th>Title</th><th>Report</th><th>Grade</th><th>Action</th></tr>';
+        reports.forEach((r, idx) => {
+            html += `<tr>
+                        <td>${r.studentName}</td>
+                        <td>${r.studentMatric}</td>
+                        <td>${r.title}</td>
+                        <td>${r.content.substring(0, 50)}...</td>
+                        <td><input type="number" id="reportGrade_${idx}" class="grade-input" min="0" max="10" value="${r.grade || ''}" placeholder="0-10"></td>
+                        <td><button class="btn-small" onclick="saveReportGrade(${idx})">Save Grade</button></td>
+                     </tr>`;
+        });
+        html += '</table>';
+        document.getElementById('gradeReportsList').innerHTML = html;
+    }
+
+    function saveAssignmentGrade(index) {
+        const gradeInput = document.getElementById(`grade_${index}`);
+        const grade = parseInt(gradeInput.value);
+        if (isNaN(grade) || grade < 0 || grade > 10) { alert('Please enter a grade between 0 and 10'); return; }
+        const submissions = JSON.parse(localStorage.getItem('submissions'));
+        submissions[index].grade = grade;
+        localStorage.setItem('submissions', JSON.stringify(submissions));
+        alert('✅ Grade saved successfully!');
+        loadGradeAssignments();
+        if (currentUser.role === 'student') loadMySubmissions();
+    }
+
+    function saveReportGrade(index) {
+        const gradeInput = document.getElementById(`reportGrade_${index}`);
+        const grade = parseInt(gradeInput.value);
+        if (isNaN(grade) || grade < 0 || grade > 10) { alert('Please enter a grade between 0 and 10'); return; }
+        const reports = JSON.parse(localStorage.getItem('reports'));
+        reports[index].grade = grade;
+        localStorage.setItem('reports', JSON.stringify(reports));
+        alert('✅ Grade saved successfully!');
+        loadGradeReports();
+        if (currentUser.role === 'student') loadMyReports();
+    }
+
+    function loadAllSummary() {
+        const submissions = JSON.parse(localStorage.getItem('submissions'));
+        const reports = JSON.parse(localStorage.getItem('reports'));
+        const quizzes = JSON.parse(localStorage.getItem('quizResults'));
+        let html = `<div class="assignment-item"><strong>📊 Total Assignments:</strong> ${submissions.length}</div>`;
+        html += `<div class="assignment-item"><strong>📄 Total Reports:</strong> ${reports.length}</div>`;
+        html += `<div class="assignment-item"><strong>📝 Total Quiz Attempts:</strong> ${quizzes.length}</div>`;
+        document.getElementById('allSubmissionsSummary').innerHTML = html;
+    }
+
+    document.getElementById('assignmentForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const assignment = document.getElementById('assignSelect').value;
+        const answer = document.getElementById('assignAnswer').value;
+        if (!assignment || !answer) return;
+        const submissions = JSON.parse(localStorage.getItem('submissions'));
+        submissions.push({ studentMatric: currentUser.matric, studentName: currentUser.name, assignment, answer, date: new Date().toLocaleString(), grade: null });
+        localStorage.setItem('submissions', JSON.stringify(submissions));
+        showAlert('assignAlert', '✅ Assignment submitted!', 'success');
+        this.reset();
+        loadMySubmissions();
+    });
+
+    document.getElementById('quizForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const q1 = document.querySelector('input[name="q1"]:checked')?.value;
+        const q2 = document.querySelector('input[name="q2"]:checked')?.value;
+        const q3 = document.querySelector('input[name="q3"]:checked')?.value;
+        let score = 0;
+        if (q1 === 'A') score++;
+        if (q2 === 'B') score++;
+        if (q3 === 'B') score++;
+        const quizResults = JSON.parse(localStorage.getItem('quizResults'));
+        quizResults.push({ studentMatric: currentUser.matric, studentName: currentUser.name, score, date: new Date().toLocaleString() });
+        localStorage.setItem('quizResults', JSON.stringify(quizResults));
+        document.getElementById('quizResult').innerHTML = `<div class="alert success">🎯 Your score: ${score}/3</div>`;
+        loadQuizHistory();
+        document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+    });
+
+    document.getElementById('reportForm')?.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const title = document.getElementById('reportTitle').value;
+        const content = document.getElementById('reportContent').value;
+        if (!title || !content) return;
+        const reports = JSON.parse(localStorage.getItem('reports'));
+        reports.push({ studentMatric: currentUser.matric, studentName: currentUser.name, title, content, date: new Date().toLocaleString(), grade: null });
+        localStorage.setItem('reports', JSON.stringify(reports));
+        showAlert('reportAlert', '✅ Report submitted!', 'success');
+        this.reset();
+        loadMyReports();
+    });
+
+    function showPage(pageId) {
+        document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    function switchAuthTab(tab) {
+        document.getElementById('loginForm').classList.toggle('active', tab === 'login');
+        document.getElementById('registerForm').classList.toggle('active', tab === 'register');
+        document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1)));
+    }
+
+    function checkLoggedIn() {
+        const saved = localStorage.getItem('currentUser');
+        if (saved) { currentUser = JSON.parse(saved); showMainApp(); loadAllData(); }
+    }
+
+    initDB();
+    checkLoggedIn();
+</script>
+</body>
+</html>
