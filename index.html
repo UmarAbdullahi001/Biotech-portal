@@ -18,7 +18,6 @@
             width: 100%;
             overflow-x: hidden;
         }
-        /* Header */
         .header {
             background: rgba(255,255,255,0.98);
             padding: 12px 16px;
@@ -64,7 +63,6 @@
             cursor: pointer;
             font-size: 0.75rem;
         }
-        /* Navigation - scrollable on mobile */
         .nav {
             background: white;
             padding: 8px 12px;
@@ -86,14 +84,23 @@
             cursor: pointer;
             flex-shrink: 0;
         }
-        /* Container - full width on mobile */
         .container {
             width: 100%;
             max-width: 100%;
             margin: 0;
             padding: 12px;
         }
-        /* Cards */
+        .page {
+            display: none;  /* HIDE ALL PAGES BY DEFAULT */
+            animation: fadeIn 0.3s;
+        }
+        .page.active {
+            display: block;  /* ONLY ACTIVE PAGE SHOWS */
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
         .card {
             background: white;
             border-radius: 20px;
@@ -109,7 +116,6 @@
             padding-left: 12px;
             margin-bottom: 12px;
         }
-        /* Forms */
         input, textarea, select {
             width: 100%;
             padding: 10px;
@@ -138,7 +144,6 @@
             cursor: pointer;
             font-size: 0.7rem;
         }
-        /* Tables - scrollable */
         .table-container {
             overflow-x: auto;
             width: 100%;
@@ -158,7 +163,6 @@
             background: #1a5f3a;
             color: white;
         }
-        /* Items */
         .assignment-item, .chat-message, .video-item, .pastq-item, .group-item, .announcement-item {
             background: #f9f9f9;
             padding: 12px;
@@ -195,7 +199,23 @@
             color: white;
             font-size: 0.7rem;
         }
-        /* Responsive */
+        .auth-container {
+            max-width: 500px;
+            margin: 40px auto;
+        }
+        .auth-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .auth-tab {
+            flex: 1;
+            padding: 10px;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+        }
         @media (max-width: 600px) {
             .logo h1 { font-size: 1rem; }
             .nav-btn { font-size: 0.65rem; padding: 4px 10px; }
@@ -234,12 +254,12 @@
         <button class="nav-btn" id="lecturerBtn" style="display:none;" onclick="showPage('admin')">👨‍🏫 Admin</button>
     </div>
     <div class="container">
-        <!-- AUTH -->
-        <div id="authPage" class="auth-container" style="max-width:500px; margin:40px auto;">
+        <!-- AUTH PAGES -->
+        <div id="authPage" class="auth-container">
             <div class="card">
-                <div class="auth-tabs" style="display:flex; gap:10px; margin-bottom:15px;">
-                    <button class="auth-tab" style="flex:1; padding:10px; background:#f0f0f0; border:none; border-radius:10px;" onclick="switchAuthTab('login')">🔐 Login</button>
-                    <button class="auth-tab" style="flex:1; padding:10px; background:#f0f0f0; border:none; border-radius:10px;" onclick="switchAuthTab('register')">📝 Register</button>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchAuthTab('login')">🔐 Login</button>
+                    <button class="auth-tab" onclick="switchAuthTab('register')">📝 Register</button>
                 </div>
                 <div id="loginForm" class="auth-form">
                     <form onsubmit="login(event)">
@@ -264,7 +284,7 @@
             </div>
         </div>
 
-        <!-- All feature pages -->
+        <!-- ALL FEATURE PAGES (each has an ID matching the nav button) -->
         <div id="announcements" class="page"><div class="card"><h2>📢 Announcements</h2><div id="announcementsList"></div></div></div>
         <div id="chat" class="page"><div class="card"><h2>💬 Forum</h2><div id="chatMessages" style="max-height:400px; overflow-y:auto; margin-bottom:12px;"></div><input type="text" id="chatMsg" placeholder="Your message..."><button class="btn" onclick="sendChatMessage()">Send</button></div></div>
         <div id="students" class="page"><div class="card"><h2>👥 Students</h2><div id="studentList"></div></div></div>
@@ -276,19 +296,13 @@
         <div id="profile" class="page"><div class="card"><h2>👤 My Profile</h2><img id="avatarImg" class="avatar" src="https://via.placeholder.com/60"><input type="file" id="avatarUpload" accept="image/*"><input type="text" id="profileName" placeholder="Full Name"><input type="tel" id="profilePhone" placeholder="Phone"><button class="btn" onclick="updateProfile()">Update Profile</button><div id="profileAlert"></div></div></div>
         <div id="certificate" class="page"><div class="card"><h2>🎓 Certificate</h2><div id="certificateStatus"></div><button class="btn" onclick="generateCertificate()">Download Certificate</button></div></div>
         <div id="analytics" class="page"><div class="card"><h2>📊 Analytics</h2><canvas id="scoreChart" width="400" height="200"></canvas><div id="analyticsData"></div></div></div>
-        <div id="admin" class="page">
-            <div class="card"><h2>📢 Post Announcement</h2><input type="text" id="annTitle" placeholder="Title"><textarea id="annMsg" rows="2"></textarea><button class="btn" onclick="postAnnouncement()">Post</button></div>
-            <div class="card"><h2>📹 Add Video</h2><input type="text" id="videoTitle" placeholder="Title"><input type="text" id="videoUrl" placeholder="YouTube URL"><button class="btn" onclick="addVideo()">Add</button></div>
-            <div class="card"><h2>📚 Add Past Question</h2><input type="text" id="pqTitle" placeholder="Title"><input type="text" id="pqLink" placeholder="Link"><button class="btn" onclick="addPastQ()">Add</button></div>
-            <div class="card"><h2>📅 Mark Attendance</h2><select id="attStudentSelect"></select><button class="btn-small" onclick="markAttendance(true)">Present</button><button class="btn-small" onclick="markAttendance(false)">Absent</button></div>
-            <div class="card"><h2>📊 Grade Submissions</h2><div id="gradeAssignmentsList"></div></div>
-            <div class="card"><h2>➕ Add Student</h2><input type="text" id="newStdName" placeholder="Name"><input type="text" id="newStdMatric" placeholder="Matric"><input type="email" id="newStdEmail" placeholder="Email"><input type="tel" id="newStdPhone" placeholder="Phone"><button class="btn" onclick="addStudentByLecturer()">Add</button></div>
-        </div>
+        <div id="admin" class="page"><div class="card"><h2>📢 Post Announcement</h2><input type="text" id="annTitle" placeholder="Title"><textarea id="annMsg" rows="2"></textarea><button class="btn" onclick="postAnnouncement()">Post</button></div><div class="card"><h2>📹 Add Video</h2><input type="text" id="videoTitle" placeholder="Title"><input type="text" id="videoUrl" placeholder="YouTube URL"><button class="btn" onclick="addVideo()">Add</button></div><div class="card"><h2>📚 Add Past Question</h2><input type="text" id="pqTitle" placeholder="Title"><input type="text" id="pqLink" placeholder="Link"><button class="btn" onclick="addPastQ()">Add</button></div><div class="card"><h2>📅 Mark Attendance</h2><select id="attStudentSelect"></select><button class="btn-small" onclick="markAttendance(true)">Present</button><button class="btn-small" onclick="markAttendance(false)">Absent</button></div><div class="card"><h2>📊 Grade Submissions</h2><div id="gradeAssignmentsList"></div></div><div class="card"><h2>➕ Add Student</h2><input type="text" id="newStdName" placeholder="Name"><input type="text" id="newStdMatric" placeholder="Matric"><input type="email" id="newStdEmail" placeholder="Email"><input type="tel" id="newStdPhone" placeholder="Phone"><button class="btn" onclick="addStudentByLecturer()">Add</button></div></div>
     </div>
     <div class="footer" id="footer" style="display:none;"><p>FUD Biotechnology (BTG) 200L | All-in-One Portal</p></div>
 </div>
 
 <script>
+// ==================== DATA INIT ====================
 function initDB(){
     if(!localStorage.getItem('users')) localStorage.setItem('users',JSON.stringify([{id:1,name:"Lecturer Admin",matric:"LECTURER",email:"lecturer@fud.edu.ng",phone:"08000000000",password:"lecturer123",role:"lecturer"}]));
     if(!localStorage.getItem('announcements')) localStorage.setItem('announcements',JSON.stringify([{title:"Welcome!",message:"All features active!",date:new Date().toLocaleString()}]));
@@ -300,8 +314,9 @@ function initDB(){
     if(!localStorage.getItem('submissions')) localStorage.setItem('submissions',JSON.stringify([]));
     if(!localStorage.getItem('groupSubmissions')) localStorage.setItem('groupSubmissions',JSON.stringify([]));
 }
-let currentUser=null;
+let currentUser = null;
 
+// ==================== AUTH ====================
 function login(e){
     e.preventDefault();
     let val = document.getElementById('loginEmail').value.toLowerCase();
@@ -310,7 +325,7 @@ function login(e){
     let user = users.find(u => (u.email === val || u.matric === val) && u.password === pwd);
     if(user){
         currentUser = user;
-        localStorage.setItem('currentUser',JSON.stringify(user));
+        localStorage.setItem('currentUser', JSON.stringify(user));
         showMainApp();
         loadAllData();
     } else alert('Invalid credentials');
@@ -342,13 +357,51 @@ function logout(){
     localStorage.removeItem('currentUser');
     location.reload();
 }
+
+// ==================== PAGE NAVIGATION (FIXED) ====================
+function showPage(pageId){
+    // Hide all pages
+    let pages = document.querySelectorAll('.page');
+    pages.forEach(page => {
+        page.classList.remove('active');
+        page.style.display = 'none';
+    });
+    // Show selected page
+    let activePage = document.getElementById(pageId);
+    if(activePage){
+        activePage.classList.add('active');
+        activePage.style.display = 'block';
+    }
+}
+function switchAuthTab(tab){
+    let loginForm = document.getElementById('loginForm');
+    let regForm = document.getElementById('registerForm');
+    let tabs = document.querySelectorAll('.auth-tab');
+    if(tab === 'login'){
+        loginForm.style.display = 'block';
+        regForm.style.display = 'none';
+        tabs[0].style.background = '#1a5f3a';
+        tabs[0].style.color = 'white';
+        tabs[1].style.background = '#f0f0f0';
+        tabs[1].style.color = 'black';
+    } else {
+        loginForm.style.display = 'none';
+        regForm.style.display = 'block';
+        tabs[0].style.background = '#f0f0f0';
+        tabs[0].style.color = 'black';
+        tabs[1].style.background = '#1a5f3a';
+        tabs[1].style.color = 'white';
+    }
+}
+
+// ==================== LOAD ALL DATA ====================
 function loadAllData(){
     loadAnnouncements(); loadChat(); loadStudentList(); loadAssignmentsList(); loadAttendance(); loadVideos(); loadPastQ(); loadGroups(); loadProfile(); loadAnalytics(); loadCertificateStatus(); loadGradeAssignments(); loadMySubmissions();
 }
 function loadAnnouncements(){let ann=JSON.parse(localStorage.getItem('announcements')); let html=''; ann.slice().reverse().forEach(a=>{html+=`<div class="announcement-item"><strong>📢 ${a.title}</strong><br><small>${a.date}</small><p>${a.message}</p></div>`;}); document.getElementById('announcementsList').innerHTML=html;}
 function loadChat(){let msgs=JSON.parse(localStorage.getItem('chatMessages')); let html=''; msgs.forEach(m=>{html+=`<div class="chat-message"><span class="name">${m.user}</span> <small>${m.time}</small><br>${m.msg}</div>`;}); document.getElementById('chatMessages').innerHTML=html;}
 function sendChatMessage(){let msg=document.getElementById('chatMsg').value; if(!msg)return; let msgs=JSON.parse(localStorage.getItem('chatMessages')); msgs.push({user:currentUser.name,msg:msg,time:new Date().toLocaleString()}); localStorage.setItem('chatMessages',JSON.stringify(msgs)); document.getElementById('chatMsg').value=''; loadChat();}
-function loadStudentList(){let users=JSON.parse(localStorage.getItem('users')); let students=users.filter(u=>u.role==='student'); let html='<div class="table-container"><table><tr><th>#</th><th>Name</th><th>Matric</th><th>Email</th><th>Phone</th></tr>'; students.forEach((s,i)=>{html+=`<tr><td>${i+1}</td><td>${s.name}</td><td>${s.matric}</td><td>${s.email}</td><td>${s.phone}</td></tr>`;}); html+='</table></div>'; document.getElementById('studentList').innerHTML=html;}
+function loadStudentList(){let users=JSON.parse(localStorage.getItem('users')); let students=users.filter(u=>u.role==='student'); let html='<div class="table-container">§<thead><tr><th>#</th><th>Name</th><th>Matric</th><th>Email</th><th>Phone</th></thead><tbody>'; students.forEach((s,i)=>{html+=`<tr><td>${i+1}</td><td>${s.name}</td><td>${s.matric}</td><td>${s.email}</td><td>${s.phone}</td></tr>`;}); html+='</tbody></div>'; document.getElementById('studentList').innerHTML=html;}
 function loadAssignmentsList(){let subs=JSON.parse(localStorage.getItem('submissions')); let my=subs.filter(s=>s.studentMatric===currentUser.matric); let html=''; my.forEach(s=>{html+=`<div class="assignment-item"><strong>${s.assignment}</strong><br>Grade: ${s.grade||'Pending'}<br>${s.answer||'File'}</div>`;}); document.getElementById('mySubmissions').innerHTML=html||'No submissions.';}
 function submitAssignment(){let assign=document.getElementById('assignSelect').value; let ans=document.getElementById('assignAnswer').value; let file=document.getElementById('assignFile').files[0]; let subs=JSON.parse(localStorage.getItem('submissions')); if(file){let reader=new FileReader(); reader.onload=function(e){subs.push({studentMatric:currentUser.matric,studentName:currentUser.name,assignment:assign,answer:'',fileName:file.name,fileData:e.target.result,date:new Date().toLocaleString(),grade:null}); localStorage.setItem('submissions',JSON.stringify(subs)); alert('Submitted'); loadAssignmentsList();}; reader.readAsDataURL(file);}else if(ans){subs.push({studentMatric:currentUser.matric,studentName:currentUser.name,assignment:assign,answer:ans,date:new Date().toLocaleString(),grade:null}); localStorage.setItem('submissions',JSON.stringify(subs)); alert('Submitted'); loadAssignmentsList();}else alert('Enter answer or file');}
 function loadAttendance(){let att=JSON.parse(localStorage.getItem('attendance')); let my=att.filter(a=>a.studentMatric===currentUser.matric); let present=my.filter(a=>a.status===true).length; let total=my.length; let percent=total?Math.round(present/total*100):0; let html=`<div><strong>Attendance: ${present}/${total} (${percent}%)</strong></div>`; my.forEach(a=>{html+=`<div>${a.date}: ${a.status?'✅ Present':'❌ Absent'}</div>`;}); document.getElementById('attendanceView').innerHTML=html;}
@@ -366,15 +419,27 @@ function updateProfile(){let name=document.getElementById('profileName').value; 
 function loadCertificateStatus(){let subs=JSON.parse(localStorage.getItem('submissions')); let my=subs.filter(s=>s.studentMatric===currentUser.matric&&s.grade&&s.grade>=5); let percent=my.length/3*100; if(percent>=80) document.getElementById('certificateStatus').innerHTML='<div class="assignment-item">✅ Eligible for certificate! (Completed '+my.length+'/3)</div>'; else document.getElementById('certificateStatus').innerHTML='<div class="assignment-item">⚠️ Need 80% completion. Current: '+Math.floor(percent)+'%</div>';}
 function generateCertificate(){let subs=JSON.parse(localStorage.getItem('submissions')); let my=subs.filter(s=>s.studentMatric===currentUser.matric&&s.grade&&s.grade>=5); if(my.length/3*100<80){alert('Not eligible');return;} let win=window.open(); win.document.write(`<html><head><title>Certificate</title><style>body{font-family:sans-serif;text-align:center;padding:50px;}</style></head><body><h1>Federal University Dutse</h1><h2>Certificate of Completion</h2><p>This certifies that <strong>${currentUser.name}</strong> (${currentUser.matric}) has successfully completed BTG 200L.</p><p>Date: ${new Date().toLocaleDateString()}</p><br><br>____________________<br>Head of Department</body></html>`); win.document.close(); win.print();}
 function loadAnalytics(){let subs=JSON.parse(localStorage.getItem('submissions')); let grades=subs.filter(s=>s.grade).map(s=>s.grade); let avg=grades.length?grades.reduce((a,b)=>a+b,0)/grades.length:0; document.getElementById('analyticsData').innerHTML=`<div>Average Grade: ${avg.toFixed(1)}/10</div><div>Total Submissions: ${subs.length}</div>`; let ctx=document.getElementById('scoreChart').getContext('2d'); new Chart(ctx,{type:'bar',data:{labels:['Assignments'],datasets:[{label:'Avg Grade',data:[avg],backgroundColor:'#1a5f3a'}]}});}
-function loadGradeAssignments(){let subs=JSON.parse(localStorage.getItem('submissions')); let html='<table><tr><th>Student</th><th>Assignment</th><th>Grade</th><th>Action</th></tr>'; subs.forEach((s,idx)=>{html+=`<tr><td>${s.studentName}</td><td>${s.assignment}</td><td><input type="number" id="grade_${idx}" min="0" max="10" value="${s.grade||''}"></td><td><button class="btn-small" onclick="saveGrade(${idx})">Save</button></td></tr>`;}); html+='</table>'; document.getElementById('gradeAssignmentsList').innerHTML=html;}
+function loadGradeAssignments(){let subs=JSON.parse(localStorage.getItem('submissions')); let html='§<thead><tr><th>Student</th><th>Assignment</th><th>Grade</th><th>Action</th></thead><tbody>'; subs.forEach((s,idx)=>{html+=`<tr><td>${s.studentName}</td><td>${s.assignment}</td><td><input type="number" id="grade_${idx}" min="0" max="10" value="${s.grade||''}"></td><td><button class="btn-small" onclick="saveGrade(${idx})">Save</button></td></tr>`;}); html+='</tbody></table>'; document.getElementById('gradeAssignmentsList').innerHTML=html;}
 function saveGrade(idx){let grade=parseInt(document.getElementById(`grade_${idx}`).value); if(isNaN(grade)||grade<0||grade>10)return; let subs=JSON.parse(localStorage.getItem('submissions')); subs[idx].grade=grade; localStorage.setItem('submissions',JSON.stringify(subs)); alert('Grade saved'); loadGradeAssignments(); if(currentUser.role!=='lecturer') loadMySubmissions();}
 function addStudentByLecturer(){let name=document.getElementById('newStdName').value, matric=document.getElementById('newStdMatric').value.toUpperCase(), email=document.getElementById('newStdEmail').value.toLowerCase(), phone=document.getElementById('newStdPhone').value; if(!name||!matric||!email)return; let users=JSON.parse(localStorage.getItem('users')); if(users.find(u=>u.matric===matric)){alert('Exists');return;} users.push({id:users.length+1,name,matric,email,phone,password:matric.slice(-4),role:'student'}); localStorage.setItem('users',JSON.stringify(users)); alert('Student added'); loadStudentList();}
 function postAnnouncement(){let title=document.getElementById('annTitle').value, msg=document.getElementById('annMsg').value; if(!title||!msg)return; let ann=JSON.parse(localStorage.getItem('announcements')); ann.push({title,message:msg,date:new Date().toLocaleString()}); localStorage.setItem('announcements',JSON.stringify(ann)); alert('Posted'); loadAnnouncements();}
 function loadMySubmissions(){let subs=JSON.parse(localStorage.getItem('submissions')); let my=subs.filter(s=>s.studentMatric===currentUser.matric); let html=''; my.forEach(s=>{html+=`<div class="assignment-item"><strong>${s.assignment}</strong> - Grade: ${s.grade||'Pending'}</div>`;}); document.getElementById('mySubmissions').innerHTML=html;}
-function showPage(pageId){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active')); document.getElementById(pageId).classList.add('active');}
-function switchAuthTab(tab){let loginForm=document.getElementById('loginForm'); let regForm=document.getElementById('registerForm'); let tabs=document.querySelectorAll('.auth-tab'); if(tab==='login'){loginForm.style.display='block'; regForm.style.display='none'; tabs[0].style.background='#1a5f3a'; tabs[0].style.color='white'; tabs[1].style.background='#f0f0f0'; tabs[1].style.color='black';}else{loginForm.style.display='none'; regForm.style.display='block'; tabs[0].style.background='#f0f0f0'; tabs[0].style.color='black'; tabs[1].style.background='#1a5f3a'; tabs[1].style.color='white';}}
-function checkLoggedIn(){let saved=localStorage.getItem('currentUser'); if(saved){currentUser=JSON.parse(saved); showMainApp(); loadAllData();}}
-initDB(); checkLoggedIn();
+
+// ==================== ENSURE PROPER INITIAL HIDE ====================
+document.addEventListener('DOMContentLoaded', function(){
+    // Initially hide all feature pages (they will be shown only after login)
+    let pages = document.querySelectorAll('.page');
+    pages.forEach(page => {
+        page.style.display = 'none';
+        page.classList.remove('active');
+    });
+    // Also hide header and nav initially
+    document.getElementById('header').style.display = 'none';
+    document.getElementById('nav').style.display = 'none';
+    document.getElementById('footer').style.display = 'none';
+});
+initDB();
+checkLoggedIn();
 </script>
 </body>
 </html>
